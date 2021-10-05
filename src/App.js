@@ -23,7 +23,7 @@ class App extends React.Component {
 
         // SETUP THE INITIAL STATE
         this.state = {
-            deletingListkeyPair : null,
+            listKeyPairMarkedForDeletion : null,
             currentList : null,
             sessionData : loadedSessionData
         }
@@ -144,9 +144,9 @@ class App extends React.Component {
         this.setState((state) => ({
             currentList : this.state.currentList,
             sessionData : this.state.sessionData,
-            deletingListkeyPair : keyPair
+            listKeyPairMarkedForDeletion : keyPair
         }));
-        console.log(this.state.deletingListkeyPair);
+        // console.log(this.state.deletingListkeyPair);
         this.showDeleteListModal();
     }
     // THIS FUNCTION SHOWS THE MODAL FOR PROMPTING THE USER
@@ -160,8 +160,35 @@ class App extends React.Component {
         let modal = document.getElementById("delete-modal");
         modal.classList.remove("is-visible");
     }
-    fullDelete() {
-        
+    fullDelete = () => {
+        let keyDel = this.state.listKeyPairMarkedForDeletion.key;
+        let currData = this.state.sessionData;
+        let newKeyNamePairs = [...this.state.sessionData.keyNamePairs];
+        let ind = 0;
+
+        this.db.queryDeleteList(keyDel);
+
+        for (let i = 0; i < newKeyNamePairs.length; i++) {
+            if (newKeyNamePairs[i].key === keyDel) {
+                ind = i;
+            }
+        }
+        currData.keyNamePairs.splice(ind, 1);
+        let currList = this.state.currentList;
+
+        if (this.state.currentList != null){
+            if (this.state.currentList.key === this.state.listKeyPairMarkedForDeletion.key) {
+                currList = null;
+            }
+        }
+        this.setState(prevState => ({
+            currentList : currList,
+            listKeyPairMarkedForDeletion : null,
+            sessionData : currData
+        }), () => {
+            this.db.mutationUpdateSessionData(this.state.sessionData);
+            this.hideDeleteListModal();
+        });
     }
     render() {
         return (
@@ -185,8 +212,9 @@ class App extends React.Component {
                 <Statusbar 
                     currentList={this.state.currentList} />
                 <DeleteModal
-                    listKeyPair = {this.state.deletingListkeyPair}
+                    listKeyPair = {this.state.listKeyPairMarkedForDeletion}
                     hideDeleteListModalCallback={this.hideDeleteListModal}
+                    fullDelete = {this.fullDelete}
                 />
             </div>
         );
