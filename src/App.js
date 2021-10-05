@@ -111,7 +111,7 @@ class App extends React.Component {
             currentList: newCurrentList,
             sessionData: prevState.sessionData
         }), () => {
-            // ANY AFTER EFFECTS?
+            
         });
     }
     // THIS FUNCTION BEGINS THE PROCESS OF CLOSING THE CURRENT LIST
@@ -158,7 +158,9 @@ class App extends React.Component {
                     renameListCallback={this.renameList}
                 />
                 <Workspace
-                    currentList={this.state.currentList} />
+                    currentList={this.state.currentList}
+                    renameItem={this.state.renameItem}
+                    moveItem={this.state.moveItem} />
                 <Statusbar 
                     currentList={this.state.currentList} />
                 <DeleteModal
@@ -166,6 +168,9 @@ class App extends React.Component {
                 />
             </div>
         );
+    }
+    renderList(key) {
+        return 
     }
 }
 
