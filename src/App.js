@@ -23,6 +23,7 @@ class App extends React.Component {
 
         // SETUP THE INITIAL STATE
         this.state = {
+            deletingList : null,
             currentList : null,
             sessionData : loadedSessionData
         }
@@ -105,10 +106,15 @@ class App extends React.Component {
         });
     }
     renameItem = (name, indexVal) => {
-        let currL = this.state.currentList;
-        let currItem = currL.items[indexVal];
-        
+        let currItems = this.state.currentList.items;
+        currItems[indexVal] = name;
 
+        this.setState(prevState => ({
+            currentList: prevState.currentList,
+            sessionData: prevState.sessionData
+        }), () => {
+            this.db.mutationUpdateList(this.state.currentList);
+        });
     }
     // THIS FUNCTION BEGINS THE PROCESS OF LOADING A LIST FOR EDITING
     loadList = (key) => {
@@ -174,9 +180,6 @@ class App extends React.Component {
                 />
             </div>
         );
-    }
-    renderList(key) {
-        return 
     }
 }
 
