@@ -23,6 +23,7 @@ class App extends React.Component {
 
         // GET THE SESSION DATA FROM OUR DATA MANAGER
         let loadedSessionData = this.db.queryGetSessionData();
+        this.tps = new jsTPS();
 
         // SETUP THE INITIAL STATE
         this.state = {
@@ -131,12 +132,14 @@ class App extends React.Component {
     }
     // THIS FUNCTION BEGINS THE PROCESS OF CLOSING THE CURRENT LIST
     closeCurrentList = () => {
+        this.tps.clearAllTransactions();
         this.setState(prevState => ({
             currentList: null,
             listKeyPairMarkedForDeletion : prevState.listKeyPairMarkedForDeletion,
             sessionData: this.state.sessionData
         }), () => {
             // ANY AFTER EFFECTS?
+            console.log("cock");
         });
     }
     deleteList = (keyPair) => {

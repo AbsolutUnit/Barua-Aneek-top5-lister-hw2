@@ -17,7 +17,7 @@ export default class EditToolbar extends React.Component {
                 <div
                     id='close-button'
                     className="top5-button"
-                    onclick = {this.props.closeCallback}>
+                    onClick = {this.props.closeCallback}>
                         &#x24E7;
                 </div>
             </div>
