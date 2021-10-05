@@ -23,7 +23,7 @@ class App extends React.Component {
 
         // SETUP THE INITIAL STATE
         this.state = {
-            deletingList : null,
+            deletingListkeyPair : null,
             currentList : null,
             sessionData : loadedSessionData
         }
@@ -136,11 +136,17 @@ class App extends React.Component {
             // ANY AFTER EFFECTS?
         });
     }
-    deleteList = () => {
+    deleteList = (keyPair) => {
         // SOMEHOW YOU ARE GOING TO HAVE TO FIGURE OUT
         // WHICH LIST IT IS THAT THE USER WANTS TO
         // DELETE AND MAKE THAT CONNECTION SO THAT THE
         // NAME PROPERLY DISPLAYS INSIDE THE MODAL
+        this.setState((state) => ({
+            currentList : this.state.currentList,
+            sessionData : this.state.sessionData,
+            deletingListkeyPair : keyPair
+        }));
+        console.log(this.state.deletingListkeyPair);
         this.showDeleteListModal();
     }
     // THIS FUNCTION SHOWS THE MODAL FOR PROMPTING THE USER
@@ -153,6 +159,9 @@ class App extends React.Component {
     hideDeleteListModal() {
         let modal = document.getElementById("delete-modal");
         modal.classList.remove("is-visible");
+    }
+    fullDelete() {
+        
     }
     render() {
         return (
@@ -176,6 +185,7 @@ class App extends React.Component {
                 <Statusbar 
                     currentList={this.state.currentList} />
                 <DeleteModal
+                    listKeyPair = {this.state.deletingListkeyPair}
                     hideDeleteListModalCallback={this.hideDeleteListModal}
                 />
             </div>
