@@ -38,6 +38,24 @@ class App extends React.Component {
             return keyPair1.name.localeCompare(keyPair2.name);
         });
     }
+    checkToolbar = () => {
+        let r_button = document.getElementById("redo-button");
+        let u_button = document.getElementById("undo-button");
+            
+        if (!this.tps.hasTransactionToRedo()) {
+            r_button.classList.add("disabled");
+            // r_button.classList.add("top5-button-disabled");
+        }
+        else {
+            r_button.classList.remove("disabled");
+        }
+        if (!this.tps.hasTransactionToUndo()) {
+            u_button.classList.add("disabled");
+        }
+        else {
+            u_button.classList.remove("disabled");
+        }
+    }
     // THIS FUNCTION BEGINS THE PROCESS OF CREATING A NEW LIST
     createNewList = () => {
         // FIRST FIGURE OUT WHAT THE NEW LIST'S KEY AND NAME WILL BE
@@ -120,6 +138,37 @@ class App extends React.Component {
             this.db.mutationUpdateList(this.state.currentList);
         });
     }
+    newMoveTrans = (origin, target) => {
+        if (origin !== target){
+            let queuedTrans = new MoveItem_Transaction(this, origin, target);
+            this.tps.addTransaction(queuedTrans);
+        }
+    }
+
+    moveItem(origin, final) {
+        let newList = this.state.currentList;
+        newList.items.splice(final, 0, newList.items.splice(origin, 1)[0]);
+
+        this.setState(prevState => ({
+            currentList : newList,
+            sessionData : prevState.sessionData
+        }), () => {
+            this.db.mutationUpdateList(this.state.currentList);
+            this.db.mutationUpdateSessionData(this.state.sessionData);
+        });
+    }
+    undoTrans = () => {
+        if (this.tps.hasTransactionToUndo()) {
+            this.tps.undoTransaction();
+            this.checkToolbar();
+        }
+    }
+    redoTrans = () => {
+        if (this.tps.hasTransactionToRedo()) {
+            this.tps.doTransaction();
+            this.checkToolbar();
+        }
+    }
     // THIS FUNCTION BEGINS THE PROCESS OF LOADING A LIST FOR EDITING
     loadList = (key) => {
         let newCurrentList = this.db.queryGetList(key);
@@ -201,7 +250,9 @@ class App extends React.Component {
             <div id="app-root">
                 <Banner 
                     title='Top 5 Lister'
-                    closeCallback={this.closeCurrentList} />
+                    closeCallback={this.closeCurrentList} 
+                    undoCallback = {this.undoTrans}
+                    redoCallback = {this.redoTrans}/>
                 <Sidebar
                     heading='Your Lists'
                     currentList={this.state.currentList}
@@ -214,7 +265,7 @@ class App extends React.Component {
                 <Workspace
                     currentList={this.state.currentList}
                     renameItemCallback={this.renameItem}
-                    moveItemCallback={this.moveItem} />
+                    moveItemCallback = {this.newMoveTrans} />
                 <Statusbar 
                     currentList={this.state.currentList} />
                 <DeleteModal
