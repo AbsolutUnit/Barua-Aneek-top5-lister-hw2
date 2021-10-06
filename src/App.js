@@ -43,17 +43,16 @@ class App extends React.Component {
         let u_button = document.getElementById("undo-button");
             
         if (!this.tps.hasTransactionToRedo()) {
-            r_button.classList.add("disabled");
-            // r_button.classList.add("top5-button-disabled");
+            r_button.classList = "top5-button-disabled";
         }
         else {
-            r_button.classList.remove("disabled");
+            r_button.classList = "top5-button";
         }
         if (!this.tps.hasTransactionToUndo()) {
-            u_button.classList.add("disabled");
+            u_button.classList = "top5-button-disabled";
         }
         else {
-            u_button.classList.remove("disabled");
+            u_button.classList = "top5-button";
         }
     }
     // THIS FUNCTION BEGINS THE PROCESS OF CREATING A NEW LIST
@@ -81,6 +80,7 @@ class App extends React.Component {
         // FORCE A CALL TO render, BUT THIS UPDATE IS ASYNCHRONOUS,
         // SO ANY AFTER EFFECTS THAT NEED TO USE THIS UPDATED STATE
         // SHOULD BE DONE VIA ITS CALLBACK
+        this.loadList(newList);
         this.setState(prevState => ({
             currentList: newList,
             sessionData: {
@@ -143,6 +143,7 @@ class App extends React.Component {
             let queuedTrans = new MoveItem_Transaction(this, origin, target);
             this.tps.addTransaction(queuedTrans);
         }
+        this.checkToolbar();
     }
 
     moveItem(origin, final) {
@@ -171,6 +172,10 @@ class App extends React.Component {
     }
     // THIS FUNCTION BEGINS THE PROCESS OF LOADING A LIST FOR EDITING
     loadList = (key) => {
+        let close = document.getElementById("close-button")
+        let add = document.getElementById("add-list-button");
+        close.classList = "top5-button";
+        add.classList = "top5-button-disabled";
         let newCurrentList = this.db.queryGetList(key);
         this.setState(prevState => ({
             currentList: newCurrentList,
@@ -188,7 +193,11 @@ class App extends React.Component {
             sessionData: this.state.sessionData
         }), () => {
             // ANY AFTER EFFECTS?
-            console.log("cock");
+            let close = document.getElementById("close-button");
+            let add = document.getElementById("add-list-button");
+            close.classList = "top5-button-disabled";
+            add.classList = "top5-button";
+            this.checkToolbar();
         });
     }
     deleteList = (keyPair) => {
@@ -245,7 +254,17 @@ class App extends React.Component {
             this.hideDeleteListModal();
         });
     }
+    keyboardInput = (event) => {
+        if (event.ctrlKey && event.key === 'y') {
+            this.redoTrans();
+            this.checkToolbar();
+        } else if (event.ctrlKey && event.key === 'z') {
+            this.undoTrans();
+            this.checkToolbar();
+        }
+    }
     render() {
+        window.addEventListener("keydown", this.keyboardInput);
         return (
             <div id="app-root">
                 <Banner 
