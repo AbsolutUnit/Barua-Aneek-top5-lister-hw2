@@ -31,10 +31,11 @@ export default class ItemCard extends React.Component {
     }
     handleBlur = () => {
         let new_name = this.state.text;
+        console.log(this.props.index);
         let ind = this.props.index;
         console.log("ItemCard handleBlur: " + ind);
         //rename trans
-        this.props.renameItemCallback(new_name, ind);
+        this.props.renameItemCallback(this.props.listK, new_name, ind);
         this.handleToggleEdit();
     }
     handleDragStart = (event) => {

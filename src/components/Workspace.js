@@ -6,7 +6,6 @@ export default class Workspace extends React.Component {
         const { currentList,
                 renameItemCallback,
                 moveItemCallback} = this.props;
-        let vals = null;
         return (
             <div id = "top5-workspace">
                 <div id = "workspace-edit">
@@ -22,6 +21,7 @@ export default class Workspace extends React.Component {
                             return <ItemCard
                             name = {val}
                             index = {key}
+                            listK = {currentList.key}
                             renameItemCallback = {renameItemCallback}
                             addMoveItemTransaction = {moveItemCallback}
                             />;
